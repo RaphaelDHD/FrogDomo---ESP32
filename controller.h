@@ -1,5 +1,8 @@
+#include <string>
 #include "Servo.h"
 #include "ChainableLED.h"
+
+using namespace std;
 
 class FanController {
   public:
@@ -48,3 +51,16 @@ class LedController {
   private:
     ChainableLED _led;
 };
+
+class WifiController {
+  public:
+    void connect(const char* ssid, const char* password);
+    bool login(string mail, string password);
+    void setAPIUrl(string apiUrl);
+    
+  private:
+    string _apiURL;
+    string _mail;
+};
+
+
