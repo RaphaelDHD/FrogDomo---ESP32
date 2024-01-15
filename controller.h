@@ -75,6 +75,7 @@ public:
   void setAPIUrl(String apiUrl);
   bool login(String email, String password);
   UserInfo get();
+  void updateAlarm(bool activeValue);
 private:
   String _apiUrl;
   String _userId;

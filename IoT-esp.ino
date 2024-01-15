@@ -105,20 +105,38 @@ void setup() {
   server.begin();
 }
 
+unsigned long lastOpeningSensorTime = 0;
+unsigned long openingSensorInterval = 100;  // Set your desired interval in milliseconds
+
+unsigned long lastApiGetTime = 0;
+unsigned long apiGetInterval = 3000;  // Set your desired interval in milliseconds
+
 void loop() {
-  bool test = code.readValue();
-  if (test)
-    openingSensor.reverseActivated();
-  bool alarmTriggered = openingSensor.readValue();
-  if (alarmTriggered) {
-    Serial.println("INTRUS A L'AIDE");
+  unsigned long currentMillis = millis();
+  if (currentMillis - lastOpeningSensorTime >= openingSensorInterval) {
+    lastOpeningSensorTime = currentMillis;
+
+    bool test = code.readValue();
+    if (test) {
+      openingSensor.reverseActivated();
+    }
+
+    bool alarmTriggered = openingSensor.readValue();
+    if (alarmTriggered) {
+      api.updateAlarm(true);
+    } else {
+      api.updateAlarm(false);
+    }
   }
 
-  
   if (isAuthenticated) {
-    userInfo = api.get();
-    manageInfo(userInfo);
+    if (currentMillis - lastApiGetTime >= apiGetInterval) {
+      lastApiGetTime = currentMillis;
+
+      userInfo = api.get();
+      manageInfo(userInfo);
+    }
   }
 
-  delay(3000);
+  delay(10);
 }

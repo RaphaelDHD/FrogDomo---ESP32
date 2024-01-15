@@ -57,16 +57,16 @@ UserInfo ApiController::get() {
     HTTPClient http;
 
     String getUserIdInfo = _apiUrl + "users/" + _userId;
-    Serial.println(getUserIdInfo);
+    //Serial.println(getUserIdInfo);
     http.begin(getUserIdInfo.c_str());
 
     int httpResponseCode = http.GET();
 
     if (httpResponseCode > 0) {
-      Serial.print("HTTP Response code: ");
-      Serial.println(httpResponseCode);
+      //Serial.print("HTTP Response code: ");
+      //Serial.println(httpResponseCode);
       String payload = http.getString();
-      Serial.println(payload);
+      // Serial.println(payload);
 
       // Parse JSON
       DynamicJsonDocument doc(1024);
@@ -89,4 +89,40 @@ UserInfo ApiController::get() {
   }
 
   return userInfo;  // Return the struct with extracted values
+}
+
+void ApiController::updateAlarm(bool activeValue) {
+  if (WiFi.status() == WL_CONNECTED) {
+    HTTPClient http;
+
+    String url = _apiUrl + "users/" + _userId + "/alarm";
+    http.begin(url);
+
+    // Prepare the JSON body
+    DynamicJsonDocument doc(1024);  // Adjust the size as needed
+    JsonObject object = doc.to<JsonObject>();
+    object["alarm"]["active"] = activeValue;
+
+    String jsonOutput;
+    serializeJson(object, jsonOutput);
+
+    http.addHeader("Content-Type", "application/json");
+
+    // Make the PUT request
+    int httpResponseCode = http.PUT(jsonOutput);
+
+    if (httpResponseCode > 0) {
+      Serial.print("HTTP Response code: ");
+      Serial.println(httpResponseCode);
+      String payload = http.getString();
+      Serial.println(payload);
+
+    } else {
+      Serial.print("Error code: ");
+      Serial.println(httpResponseCode);
+    }
+
+    // Free resources
+    http.end();
+  }
 }
