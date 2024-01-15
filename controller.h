@@ -53,6 +53,7 @@ public:
   void setRotation(int rotation);
 private:
   Servo servoMotor;
+  int _rotation = 0;
 };
 
 class LedController {

@@ -29,13 +29,14 @@ UserInfo userInfo;
 
 void manageInfo(UserInfo info) {
   // manage fan
-  Serial.println(info.fanActive);
-  Serial.println(info.fanSpeed);
   if (!info.fanActive) {
     fan.setSpeed(0);
   } else {
     fan.setSpeed(info.fanSpeed);
   }
+
+  // manage servo
+  servo.setRotation(info.portalValue);
 }
 
 

@@ -39,7 +39,6 @@ bool ApiController::login(String email, String password) {
     Serial.println(payload);
     http.end();
     if (httpResponseCode == 200) {
-      payload = payload.substring(1, payload.length() - 1);
       _userId = payload;
       return true;
     }
@@ -58,7 +57,7 @@ UserInfo ApiController::get() {
     HTTPClient http;
 
     String getUserIdInfo = _apiUrl + "users/" + _userId;
-
+    Serial.println(getUserIdInfo);
     http.begin(getUserIdInfo.c_str());
 
     int httpResponseCode = http.GET();

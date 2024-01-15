@@ -5,5 +5,7 @@ void ServoController::attach(int pin) {
 }
 
 void ServoController::setRotation(int rotation) {
-  servoMotor.write(rotation);
+  if (rotation != _rotation) {
+    servoMotor.write(rotation);
+  }
 }
