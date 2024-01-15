@@ -10,8 +10,6 @@
 const char *WIFI_SSID = "PHONE_ESP";
 const char *WIFI_PASSWORD = "esp32-iot";
 
-String API_URL = "http://IP_ADDRESS_COMPUTER:3000/";
-
 AsyncWebServer server(80);
 WiFiClientSecure client;
 
@@ -26,9 +24,29 @@ ApiController api;
 
 bool isAuthenticated = false;
 
+UserInfo userInfo;
+
+
+void manageInfo(UserInfo info) {
+  // manage fan
+  Serial.println(info.fanActive);
+  Serial.println(info.fanSpeed);
+  if (!info.fanActive) {
+    fan.setSpeed(0);
+  } else {
+    fan.setSpeed(info.fanSpeed);
+  }
+}
+
 
 void setup() {
   Serial.begin(115200);  // debug
+  servo.attach(A0);
+  fan.attach(A5);
+  openingSensor.attach(D2);
+  code.attach(4);
+
+
   wifi.connect(WIFI_SSID, WIFI_PASSWORD);
   //api.setAPIUrl(API_URL);
 
@@ -95,9 +113,11 @@ void loop() {
     Serial.println("INTRUS A L'AIDE");
   }
 
-  if(isAuthenticated) {
-
+  
+  if (isAuthenticated) {
+    userInfo = api.get();
+    manageInfo(userInfo);
   }
 
-  delay(100);
+  delay(3000);
 }

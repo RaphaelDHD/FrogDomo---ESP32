@@ -5,6 +5,17 @@
 
 using namespace std;
 
+struct UserInfo {
+  int fanSpeed;
+  bool fanActive;
+  bool alarmActive;
+  int portalValue;
+  bool lightBulbActive;
+  String lightBulbColor;
+};
+
+
+
 class FanController {
 public:
   void attach(int pin);
@@ -62,7 +73,8 @@ class ApiController {
 public:
   void setAPIUrl(String apiUrl);
   bool login(String email, String password);
-  void get();
+  UserInfo get();
 private:
   String _apiUrl;
+  String _userId;
 };

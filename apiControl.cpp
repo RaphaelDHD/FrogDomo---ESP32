@@ -23,7 +23,7 @@ bool ApiController::login(String email, String password) {
   http.begin(client, loginUrl);
   http.setTimeout(10000);
 
-  http.addHeader("Content-Type", "application/json"); 
+  http.addHeader("Content-Type", "application/json");
 
   JsonObject object = doc.to<JsonObject>();
   object["email"] = email;
@@ -36,9 +36,11 @@ bool ApiController::login(String email, String password) {
   if (httpResponseCode > 0) {
     String payload = http.getString();
     Serial.println("\nStatusCode: " + String(httpResponseCode));
-    Serial.println("Server response: " + payload);
+    Serial.println(payload);
     http.end();
     if (httpResponseCode == 200) {
+      payload = payload.substring(1, payload.length() - 1);
+      _userId = payload;
       return true;
     }
     return false;
@@ -49,26 +51,43 @@ bool ApiController::login(String email, String password) {
   }
 }
 
-void ApiController::get() {
-  if(WiFi.status()== WL_CONNECTED){
-      HTTPClient http;
-      
+UserInfo ApiController::get() {
+  UserInfo userInfo;  // Create an instance of the struct
 
-      http.begin(_apiUrl.c_str());
-      
-      int httpResponseCode = http.GET();
-      
-      if (httpResponseCode>0) {
-        Serial.print("HTTP Response code: ");
-        Serial.println(httpResponseCode);
-        String payload = http.getString();
-        Serial.println(payload);
-      }
-      else {
-        Serial.print("Error code: ");
-        Serial.println(httpResponseCode);
-      }
-      // Free resources
-      http.end();
+  if (WiFi.status() == WL_CONNECTED) {
+    HTTPClient http;
+
+    String getUserIdInfo = _apiUrl + "users/" + _userId;
+
+    http.begin(getUserIdInfo.c_str());
+
+    int httpResponseCode = http.GET();
+
+    if (httpResponseCode > 0) {
+      Serial.print("HTTP Response code: ");
+      Serial.println(httpResponseCode);
+      String payload = http.getString();
+      Serial.println(payload);
+
+      // Parse JSON
+      DynamicJsonDocument doc(1024);
+      deserializeJson(doc, payload);
+
+      // Extract values
+      userInfo.fanSpeed = doc["fan"]["speed"];
+      userInfo.fanActive = doc["fan"]["active"];
+      userInfo.alarmActive = doc["alarm"]["active"];
+      userInfo.portalValue = doc["portal"];
+      userInfo.lightBulbActive = doc["light_bulb"]["active"];
+      userInfo.lightBulbColor = doc["light_bulb"]["color"].as<String>();
+
+    } else {
+      Serial.print("Error code: ");
+      Serial.println(httpResponseCode);
     }
+    // Free resources
+    http.end();
+  }
+
+  return userInfo;  // Return the struct with extracted values
 }
