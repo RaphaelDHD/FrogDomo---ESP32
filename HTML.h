@@ -1,7 +1,7 @@
 const char index_html[] PROGMEM = R"rawliteral(
 <!DOCTYPE HTML><html>
 <head>
-  <title>ESP Web Server</title>
+  <title>ESP Frog DOMO</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     html {font-family: Arial; display: inline-block; text-align: center;}
@@ -16,7 +16,7 @@ const char index_html[] PROGMEM = R"rawliteral(
   </style>
 </head>
 <body>
-  <h2>ESP Web Server</h2>
+  <h2>ESP Frog DOMO</h2>
   <button onclick="logoutButton()">Logout</button>
 <script>
 function logoutButton() {
@@ -45,25 +45,28 @@ const char logout_html[] PROGMEM = R"rawliteral(
 const char login_html[] PROGMEM = R"rawliteral(
 <!DOCTYPE HTML><html>
 <head>
-  <title>Login - ESP Web Server</title>
+  <title>Login - ESP Frog DOMO</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     html {font-family: Arial; display: inline-block; text-align: center;}
     h2 {font-size: 2.6rem;}
     body {max-width: 600px; margin:0px auto; padding-bottom: 10px;}
     form {margin: 20px; text-align: left;}
-    input[type="text"], input[type="password"] {width: 100%; padding: 12px 20px; margin: 8px 0; display: inline-block; border: 1px solid #ccc; box-sizing: border-box;}
+    input[type="text"], input[type="password"], input[type="ip"] {width: 100%; padding: 12px 20px; margin: 8px 0; display: inline-block; border: 1px solid #ccc; box-sizing: border-box;}
     input[type="submit"] {background-color: #4CAF50; color: white; padding: 14px 20px; margin: 8px 0; border: none; border-radius: 4px; cursor: pointer;}
   </style>
 </head>
 <body>
-  <h2>Login - ESP Web Server</h2>
+  <h2>Login - Frog DOMO</h2>
   <form action="/login" method="post">
-    <label for="email">email:</label>
+    <label for="email">Email:</label>
     <input type="text" id="email" name="email" required>
     <br>
     <label for="password">Password:</label>
     <input type="password" id="password" name="password" required>
+    <br>
+    <label for="ip">Server Address:</label>
+    <input type="ip" id="ip" name="ip" placeholder="Enter computer IP address" required>
     <br>
     <input type="submit" value="Login">
   </form>
@@ -71,10 +74,11 @@ const char login_html[] PROGMEM = R"rawliteral(
 </html>
 )rawliteral";
 
+
 const char login_error_html[] PROGMEM = R"rawliteral(
 <!DOCTYPE HTML><html>
 <head>
-  <title>Login Error - ESP Web Server</title>
+  <title>Login Error - ESP Frog DOMO</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     html {font-family: Arial; display: inline-block; text-align: center;}
@@ -84,7 +88,7 @@ const char login_error_html[] PROGMEM = R"rawliteral(
   </style>
 </head>
 <body>
-  <h2>Login Error - ESP Web Server</h2>
+  <h2>Login Error - ESP Frog DOMO</h2>
   <p>Invalid email or password. <a href="/">Return to homepage</a>.</p>
 </body>
 </html>
@@ -94,7 +98,7 @@ const char login_error_html[] PROGMEM = R"rawliteral(
 const char login_success_html[] PROGMEM = R"rawliteral(
 <!DOCTYPE HTML><html>
 <head>
-  <title>Login Success - ESP Web Server</title>
+  <title>Login Success - ESP Frog DOMO</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     html {font-family: Arial; display: inline-block; text-align: center;}
@@ -105,7 +109,7 @@ const char login_success_html[] PROGMEM = R"rawliteral(
   </style>
 </head>
 <body>
-  <h2>Login Success - ESP Web Server</h2>
+  <h2>Login Success - ESP Frog DOMO</h2>
   <p>Welcome! You are now connected.</p>
   <button onclick="logoutButton()">Logout</button>
   <script>

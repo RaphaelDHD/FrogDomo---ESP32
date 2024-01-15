@@ -30,7 +30,7 @@ bool isAuthenticated = false;
 void setup() {
   Serial.begin(115200);  // debug
   wifi.connect(WIFI_SSID, WIFI_PASSWORD);
-  api.setAPIUrl(API_URL);
+  //api.setAPIUrl(API_URL);
 
   // Display the URL of the server
   Serial.println("Server started");
@@ -38,7 +38,6 @@ void setup() {
   Serial.print(WiFi.localIP());
   Serial.println(":80");
 
-  api.get();
 
   // Route for root / web page
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
@@ -51,7 +50,8 @@ void setup() {
     // Get the values from the form
     String email = request->arg("email");
     String password = request->arg("password");
-
+    String API_URL = request->arg("ip");
+    api.setAPIUrl(API_URL);
     // Perform your custom authentication logic
     if (api.login(email, password)) {
       Serial.println("Authentication successful");
