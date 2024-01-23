@@ -62,7 +62,10 @@ void CodeController::enterNumber(int value) {
 
 bool CodeController::checkCode() {
   if (code[0] == 1 && code[1] == 2 && code[2] == 3 && code[3] == 4) {
-    Serial.println("TRUE");
+    code[0] = 0;
+    code[1] = 0;
+    code[2] = 0;
+    code[3] = 0;
     return true;
   }
   return false;

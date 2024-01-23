@@ -1,7 +1,6 @@
 #include <string>
 #include "Servo.h"
 #include "ChainableLED.h"
-#include <WiFiClientSecure.h>
 
 using namespace std;
 
@@ -20,8 +19,10 @@ class FanController {
 public:
   void attach(int pin);
   void setSpeed(int speed);
+  void setActive(bool value);
 private:
   int _pin;
+  bool _active;
 };
 
 class OpeningController {
@@ -30,9 +31,11 @@ public:
   bool readValue();
   void setActivated(bool value);
   void reverseActivated();
+  bool getActive();
+  bool GetIsTriggered();
 private:
   int _pin;
-  bool activated;
+  bool _active;
   bool isTriggered;
 };
 
@@ -43,7 +46,7 @@ public:
   bool checkCode();
 private:
   int codeSize;
-  int* code;  // Use int* for dynamic arrays
+  int* code;
   void enterNumber(int value);
 };
 
@@ -61,8 +64,14 @@ public:
   LedController(int clkpin, int datapin);
   void setColor(int r, int g, int b);
   int value();
+  void setActive(bool value);
+  void setColorFromHex(String hexColor);
 private:
   ChainableLED _led;
+  bool _active;
+  int _red;
+  int _green;
+  int _blue;
 };
 
 class WifiController {
@@ -75,7 +84,7 @@ public:
   void setAPIUrl(String apiUrl);
   bool login(String email, String password);
   UserInfo get();
-  void updateAlarm(bool activeValue);
+  void updateAlarm(bool activeValue, bool rungValue);
 private:
   String _apiUrl;
   String _userId;

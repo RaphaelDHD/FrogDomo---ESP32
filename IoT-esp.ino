@@ -2,7 +2,6 @@
 #include "FeatherShieldPinouts.h"
 #include "HTML.h"
 
-#include <WiFiClientSecure.h>
 
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
@@ -11,8 +10,6 @@ const char *WIFI_SSID = "PHONE_ESP";
 const char *WIFI_PASSWORD = "esp32-iot";
 
 AsyncWebServer server(80);
-WiFiClientSecure client;
-
 
 ServoController servo;
 FanController fan;
@@ -26,6 +23,8 @@ bool isAuthenticated = false;
 
 UserInfo userInfo;
 
+bool _alarmIsTriggered = NULL;
+bool _alarmIsActive = NULL;
 
 void manageInfo(UserInfo info) {
   // manage fan
@@ -37,7 +36,17 @@ void manageInfo(UserInfo info) {
 
   // manage servo
   servo.setRotation(info.portalValue);
+
+  // manage light bulb
+  if (!info.lightBulbActive) {
+    led.setActive(false);
+    led.setColor(0, 0, 0);
+  } else {
+    led.setActive(true);
+    led.setColorFromHex(info.lightBulbColor);
+  }
 }
+
 
 
 void setup() {
@@ -46,7 +55,6 @@ void setup() {
   fan.attach(A5);
   openingSensor.attach(D2);
   code.attach(4);
-
 
   wifi.connect(WIFI_SSID, WIFI_PASSWORD);
   //api.setAPIUrl(API_URL);
@@ -106,37 +114,39 @@ void setup() {
 }
 
 unsigned long lastOpeningSensorTime = 0;
-unsigned long openingSensorInterval = 100;  // Set your desired interval in milliseconds
+unsigned long openingSensorInterval = 200;  // Set your desired interval in milliseconds
 
 unsigned long lastApiGetTime = 0;
 unsigned long apiGetInterval = 3000;  // Set your desired interval in milliseconds
 
 void loop() {
   unsigned long currentMillis = millis();
-  if (currentMillis - lastOpeningSensorTime >= openingSensorInterval) {
-    lastOpeningSensorTime = currentMillis;
-
-    bool test = code.readValue();
-    if (test) {
-      openingSensor.reverseActivated();
-    }
-
-    bool alarmTriggered = openingSensor.readValue();
-    if (alarmTriggered) {
-      api.updateAlarm(true);
-    } else {
-      api.updateAlarm(false);
-    }
+  bool codeIsValid = code.readValue();
+  if (codeIsValid) {
+    openingSensor.reverseActivated();
   }
 
-  if (isAuthenticated) {
+  if (isAuthenticated && currentMillis - lastOpeningSensorTime >= openingSensorInterval) {
+    lastOpeningSensorTime = currentMillis;
+    bool isOpeningSensorActive = openingSensor.getActive();
+    bool isAlarmTriggered = openingSensor.readValue();
+    Serial.print("Alarm Triggered: ");
+    Serial.print(isAlarmTriggered);
+    Serial.print(" | Opening Sensor Active: ");
+    Serial.println(isOpeningSensorActive);
+    if (isAlarmTriggered != _alarmIsTriggered || isOpeningSensorActive != _alarmIsActive) {
+      api.updateAlarm(isOpeningSensorActive, isAlarmTriggered);
+      _alarmIsTriggered = isAlarmTriggered;
+      _alarmIsActive = isOpeningSensorActive;
+    }
+
     if (currentMillis - lastApiGetTime >= apiGetInterval) {
       lastApiGetTime = currentMillis;
-
       userInfo = api.get();
       manageInfo(userInfo);
     }
-  }
 
-  delay(10);
+    // Optional delay, adjust as needed
+    delay(10);
+  }
 }

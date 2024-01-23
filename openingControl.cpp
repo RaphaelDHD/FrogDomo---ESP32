@@ -3,23 +3,31 @@
 void OpeningController::attach(int pin) {
   _pin = pin; 
   pinMode(pin, INPUT_PULLUP);
-  activated = false;
+  _active = false;
   isTriggered = false;
 }
 
 bool OpeningController::readValue() {
-  if (activated) {
-    isTriggered = digitalRead(_pin); 
+  if (_active) {
+    isTriggered = digitalRead(_pin);
     return isTriggered;
   }
   return false;
 }
 
 void OpeningController::setActivated(bool value) {
-  activated = value;
+  _active = value;
 }
 
 void OpeningController::reverseActivated() {
-  activated = !activated;
+  _active = !_active;
+}
+
+bool OpeningController::getActive() {
+  return _active;
+}
+
+bool OpeningController::GetIsTriggered(){
+  return isTriggered;
 }
 

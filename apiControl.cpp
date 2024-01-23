@@ -80,8 +80,9 @@ UserInfo ApiController::get() {
       userInfo.lightBulbActive = doc["light_bulb"]["active"];
       userInfo.lightBulbColor = doc["light_bulb"]["color"].as<String>();
 
+
     } else {
-      Serial.print("Error code: ");
+      //Serial.print("Error code: ");
       Serial.println(httpResponseCode);
     }
     // Free resources
@@ -91,20 +92,22 @@ UserInfo ApiController::get() {
   return userInfo;  // Return the struct with extracted values
 }
 
-void ApiController::updateAlarm(bool activeValue) {
+void ApiController::updateAlarm(bool activeValue, bool rungValue) {
   if (WiFi.status() == WL_CONNECTED) {
     HTTPClient http;
 
-    String url = _apiUrl + "users/" + _userId + "/alarm";
+    String url = _apiUrl + "users/" + _userId;
     http.begin(url);
 
     // Prepare the JSON body
     DynamicJsonDocument doc(1024);  // Adjust the size as needed
-    JsonObject object = doc.to<JsonObject>();
-    object["alarm"]["active"] = activeValue;
+    JsonObject root = doc.to<JsonObject>();
+    JsonObject alarmObject = root.createNestedObject("alarm");
+    alarmObject["active"] = activeValue;
+    alarmObject["rung"] = rungValue;
 
     String jsonOutput;
-    serializeJson(object, jsonOutput);
+    serializeJson(root, jsonOutput);
 
     http.addHeader("Content-Type", "application/json");
 
